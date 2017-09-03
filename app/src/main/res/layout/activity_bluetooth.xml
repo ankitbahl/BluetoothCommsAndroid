@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.ankit.arduinobluetoothcomms.BluetoothActivity">
+
+    <Button
+        android:id="@+id/on_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="On"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="264dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="178dp" />
+
+    <Button
+        android:id="@+id/off_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Off"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="85dp"
+        android:layout_below="@+id/on_button"
+        android:layout_alignStart="@+id/on_button"
+        android:layout_marginTop="68dp" />
+</RelativeLayout>
