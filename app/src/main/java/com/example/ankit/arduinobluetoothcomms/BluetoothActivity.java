@@ -138,6 +138,7 @@ public class BluetoothActivity extends Activity {
                 // Unable to connect; close the socket and return.
                 Log.e("uh oh", "Could not connect");
                 connectException.printStackTrace();
+                keepRunning = false;
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -162,6 +163,9 @@ public class BluetoothActivity extends Activity {
             } catch (IOException e) {
                 Log.e("Uh oh", "Could not close the client socket", e);
             }
+            //start a new thread to restart socket
+            ConnectThread thread = new ConnectThread(device);
+            thread.start();
         }
     }
 }
