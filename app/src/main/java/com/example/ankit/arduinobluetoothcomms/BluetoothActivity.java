@@ -78,12 +78,18 @@ public class BluetoothActivity extends Activity {
         thread.start();
     }
 
-    public void sendBytes(BluetoothSocket socket) {
-        try(OutputStream tmpOut = socket.getOutputStream()) {
+    public void sendAndReadBytes(BluetoothSocket socket) {
+        try(
+                OutputStream outputStream = socket.getOutputStream();
+                InputStream inputStream = socket.getInputStream()) {
 
             while (keepRunning) {
                 if(msgQueue.size() > 0) {
-                    tmpOut.write(msgQueue.poll().getBytes());
+                    outputStream.write(msgQueue.poll().getBytes());
+                }
+
+                while(inputStream.available() > 0) {
+                    println(inputStream.read());
                 }
             }
         } catch (IOException e) {
@@ -143,7 +149,7 @@ public class BluetoothActivity extends Activity {
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
             while(keepRunning) {
-                sendBytes(mmSocket);
+                sendAndReadBytes(mmSocket);
             }
             cancel();
         }
