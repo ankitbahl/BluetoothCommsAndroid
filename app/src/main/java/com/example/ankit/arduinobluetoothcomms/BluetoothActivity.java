@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BluetoothActivity extends Activity {
     static BluetoothAdapter bluetoothAdapter;
@@ -25,6 +26,7 @@ public class BluetoothActivity extends Activity {
     ConcurrentLinkedQueue<String> msgQueue = new ConcurrentLinkedQueue<>();
     static boolean keepRunning = true;
     static String TAG = "Bluetooth";
+    static AtomicInteger retryCounter = new AtomicInteger(0);
     static UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     @Override
@@ -40,17 +42,14 @@ public class BluetoothActivity extends Activity {
         buttons.add((Button)findViewById(R.id.on_button));
         buttons.add((Button)findViewById(R.id.off_button));
         for(Button button : buttons) {
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (view.getId()) {
-                        case R.id.off_button:
-                            msgQueue.add("0");
-                            break;
-                        case R.id.on_button:
-                            msgQueue.add("1");
-                            break;
-                    }
+            button.setOnClickListener(view -> {
+                switch (view.getId()) {
+                    case R.id.off_button:
+                        msgQueue.add("0");
+                        break;
+                    case R.id.on_button:
+                        msgQueue.add("1");
+                        break;
                 }
             });
         }
@@ -74,7 +73,7 @@ public class BluetoothActivity extends Activity {
             }
         }
 
-        ConnectThread thread = new ConnectThread(device);
+        ConnectThread thread = new ConnectThread();
         thread.start();
     }
 
@@ -109,13 +108,11 @@ public class BluetoothActivity extends Activity {
 
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
 
-        ConnectThread(BluetoothDevice device) {
+        ConnectThread() {
             // Use a temporary object that is later assigned to mmSocket
             // because mmSocket is final.
             BluetoothSocket tmp = null;
-            mmDevice = device;
 
             try {
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
@@ -136,7 +133,7 @@ public class BluetoothActivity extends Activity {
                 mmSocket.connect();
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and return.
-                Log.e("uh oh", "Could not connect");
+                Log.e("uh oh", "Could not connect, retrying in 1s");
                 connectException.printStackTrace();
                 keepRunning = false;
                 try {
@@ -144,6 +141,18 @@ public class BluetoothActivity extends Activity {
                 } catch (IOException closeException) {
                     closeException.printStackTrace();
                 }
+                //start a new thread to restart socket
+                int retryCount = retryCounter.incrementAndGet();
+                if(retryCount == 5) {
+                    return;
+                }
+                ConnectThread thread = new ConnectThread();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                thread.start();
                 return;
             }
 
@@ -163,9 +172,6 @@ public class BluetoothActivity extends Activity {
             } catch (IOException e) {
                 Log.e("Uh oh", "Could not close the client socket", e);
             }
-            //start a new thread to restart socket
-            ConnectThread thread = new ConnectThread(device);
-            thread.start();
         }
     }
 }
