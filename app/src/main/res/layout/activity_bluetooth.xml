@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.ankit.arduinobluetoothcomms.BluetoothActivity">
-
-    <Button
-        android:id="@+id/on_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="On"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="264dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="178dp" />
 
     <Button
         android:id="@+id/off_button"
@@ -24,7 +13,126 @@
         android:text="Off"
         tools:layout_editor_absoluteX="152dp"
         tools:layout_editor_absoluteY="85dp"
+        android:layout_alignBaseline="@+id/on_button"
+        android:layout_alignBottom="@+id/on_button"
+        android:layout_toEndOf="@+id/on_button"
+        android:layout_marginStart="72dp"
+        android:layout_x="223dp"
+        android:layout_y="29dp" />
+
+    <Button
+        android:id="@+id/restart_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Restart"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="85dp"
+        android:layout_marginTop="120dp"
         android:layout_below="@+id/on_button"
-        android:layout_alignStart="@+id/on_button"
-        android:layout_marginTop="68dp" />
-</RelativeLayout>
+        android:layout_toEndOf="@+id/on_button"
+        android:layout_x="130dp"
+        android:layout_y="123dp" />
+
+    <Button
+        android:id="@+id/on_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="On"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="264dp"
+        android:layout_marginTop="140dp"
+        android:layout_marginStart="56dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_x="37dp"
+        android:layout_y="32dp" />
+
+    <Button
+        android:text="E"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/e_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="162dp"
+        android:layout_y="260dp" />
+
+    <Button
+        android:text="C"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/c_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="38dp"
+        android:layout_y="260dp" />
+
+    <Button
+        android:text="D"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/d_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="99dp"
+        android:layout_y="260dp" />
+
+    <Button
+        android:text="F"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/f_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="223dp"
+        android:layout_y="260dp" />
+
+    <Button
+        android:text="G"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/g_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="286dp"
+        android:layout_y="260dp" />
+
+    <Button
+        android:text="A"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/a_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="39dp"
+        android:layout_y="380dp" />
+
+    <Button
+        android:text="B"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/b_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="101dp"
+        android:layout_y="380dp" />
+
+    <Button
+        android:text="C"
+        android:layout_width="50dp"
+        android:layout_height="114dp"
+        android:id="@+id/c2_button"
+        android:layout_below="@+id/restart_button"
+        android:layout_toStartOf="@+id/restart_button"
+        android:layout_marginTop="31dp"
+        android:layout_x="162dp"
+        android:layout_y="380dp" />
+
+</AbsoluteLayout>

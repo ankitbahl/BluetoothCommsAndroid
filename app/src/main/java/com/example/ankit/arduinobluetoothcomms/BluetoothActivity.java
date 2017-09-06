@@ -5,8 +5,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -26,11 +28,13 @@ public class BluetoothActivity extends Activity {
     ConcurrentLinkedQueue<String> msgQueue = new ConcurrentLinkedQueue<>();
     static boolean keepRunning = true;
     static String TAG = "Bluetooth";
-    static AtomicInteger retryCounter = new AtomicInteger(0);
+    static AtomicInteger retryCounter;
     static UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        println("restarting");
+        retryCounter = new AtomicInteger(0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         setupBluetooth();
@@ -38,11 +42,13 @@ public class BluetoothActivity extends Activity {
     }
 
     private void buttonOnClicks() {
-        List<Button> buttons = new ArrayList<>();
-        buttons.add((Button)findViewById(R.id.on_button));
-        buttons.add((Button)findViewById(R.id.off_button));
-        for(Button button : buttons) {
-            button.setOnClickListener(view -> {
+        int[] buttonIds = new int[]{
+                R.id.off_button,
+                R.id.on_button,
+                R.id.restart_button
+        };
+        for(int buttonId : buttonIds) {
+            (findViewById(buttonId)).setOnClickListener(view -> {
                 switch (view.getId()) {
                     case R.id.off_button:
                         msgQueue.add("0");
@@ -50,7 +56,60 @@ public class BluetoothActivity extends Activity {
                     case R.id.on_button:
                         msgQueue.add("1");
                         break;
+                    case R.id.restart_button:
+                        setResult(RESULT_CANCELED);
+                        finish();
+                        break;
                 }
+            });
+        }
+
+        int[] pianoButtonIds = new int[] {
+                R.id.c_button,
+                R.id.d_button,
+                R.id.e_button,
+                R.id.f_button,
+                R.id.g_button,
+                R.id.a_button,
+                R.id.b_button,
+                R.id.c2_button
+        };
+        for(int pianoButtonId : pianoButtonIds) {
+            (findViewById(pianoButtonId)).setOnTouchListener((v, event) -> {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    switch (v.getId()) {
+                        case R.id.c_button:
+                            msgQueue.add("2");
+                            break;
+                        case R.id.d_button:
+                            msgQueue.add("3");
+                            break;
+                        case R.id.e_button:
+                            msgQueue.add("4");
+                            break;
+                        case R.id.f_button:
+                            msgQueue.add("5");
+                            break;
+                        case R.id.g_button:
+                            msgQueue.add("6");
+                            break;
+                        case R.id.a_button:
+                            msgQueue.add("7");
+                            break;
+                        case R.id.b_button:
+                            msgQueue.add("8");
+                            break;
+                        case R.id.c2_button:
+                            msgQueue.add("9");
+                            break;
+
+                    }
+                    return true;
+                } else if(event.getAction() == MotionEvent.ACTION_UP) {
+                    msgQueue.add("0");
+                    return true;
+                }
+                return false;
             });
         }
     }
@@ -143,7 +202,7 @@ public class BluetoothActivity extends Activity {
                 }
                 //start a new thread to restart socket
                 int retryCount = retryCounter.incrementAndGet();
-                if(retryCount == 5) {
+                if(retryCount > 5) {
                     return;
                 }
                 ConnectThread thread = new ConnectThread();

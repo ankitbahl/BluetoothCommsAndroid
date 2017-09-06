@@ -10,6 +10,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent bluetoothIntent = new Intent(this, BluetoothActivity.class);
-        startActivity(bluetoothIntent);
+        startActivityForResult(bluetoothIntent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_CANCELED) {
+            Intent bluetoothIntent = new Intent(this, BluetoothActivity.class);
+            startActivityForResult(bluetoothIntent, 0);
+        }
     }
 }
