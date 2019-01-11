@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +31,10 @@ public class BluetoothActivity extends Activity {
     static BluetoothAdapter bluetoothAdapter;
     static BluetoothDevice device;
     ConcurrentLinkedQueue<String> msgQueue = new ConcurrentLinkedQueue<>();
+    Set<Byte> sentSignals = new HashSet<>();
+    byte sentSignalCounter = 0;
     static boolean keepRunning = true;
+    static long signalTimeoutMS = 2000;
     static String TAG = "Bluetooth";
     static AtomicInteger retryCounter;
     static UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -114,6 +122,20 @@ public class BluetoothActivity extends Activity {
         }
     }
 
+    //TODO is there a better way
+    private byte[] addHeaderToBytes(byte header, byte[] array) {
+        byte[] newList = new byte[array.length + 1];
+        newList[array.length] = header;
+        for (int i = 0; i < array.length; i++) {
+            newList[i] = array[i];
+        }
+        return newList;
+    }
+
+    private void receiveAck(int ack) {
+        sentSignals.remove((byte)ack);
+    }
+
     private void setupBluetooth() {
         println("Setting up");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -142,12 +164,23 @@ public class BluetoothActivity extends Activity {
                 InputStream inputStream = socket.getInputStream()) {
 
             while (keepRunning) {
-                if(msgQueue.size() > 0) {
-                    outputStream.write(msgQueue.poll().getBytes());
+                long timer = Long.MAX_VALUE;
+                if(msgQueue.size() > 0 && sentSignals.isEmpty()) {
+                    byte[] sendBytes = msgQueue.poll().getBytes();
+                    byte[] bytesWithHeader = addHeaderToBytes(sentSignalCounter, sendBytes);
+                    sentSignals.add(sentSignalCounter);
+                    sentSignalCounter++;
+                    outputStream.write(bytesWithHeader);
+                    timer = SystemClock.currentThreadTimeMillis();
                 }
 
                 while(inputStream.available() > 0) {
-                    println(inputStream.read());
+                    receiveAck(inputStream.read());
+                    timer = Long.MAX_VALUE;
+                }
+
+                if(SystemClock.currentThreadTimeMillis() - timer > signalTimeoutMS) {
+                    Log.e("uh oh", "Bluetooth device not working");
                 }
             }
         } catch (IOException e) {
